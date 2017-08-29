@@ -75,7 +75,7 @@ public class TodoLinkedList {
 
                 return true;
             }
-        } else if (source > taret) {
+        } else if (source > target) {
             if (target == 0) {
                 Node sourcePrevious = head;
                 for (int i = 1; i < source; i++)
@@ -83,17 +83,17 @@ public class TodoLinkedList {
                 sourceCurrent = sourcePrevious.next;
 
                 sourcePrevious.next = sourceCurrent.next;
-                sourCurrent.next = targetCurrent;
-                head = sourCurrent;
+                sourceCurrent.next = targetCurrent;
+                head = sourceCurrent;
 
                 return true;
             } else {
                 Node sourcePrevious = head;
                 Node targetPrevious = head;
-                for (int = 1; i < source; i++)
+                for (int i = 1; i < source; i++)
                     sourcePrevious = sourcePrevious.next;
                 sourceCurrent = sourcePrevious.next;
-                for (int = 1; i < target; i++)
+                for (int i = 1; i < target; i++)
                     targetPrevious = targetPrevious.next;
                 targetCurrent = targetPrevious.next;
 
@@ -104,11 +104,36 @@ public class TodoLinkedList {
                 return true;
             }
         } else
-            return true
+            return true;
     }
 
     public int getSize() {
         return size;
+    }
+
+    public java.util.Iterator iterator() {
+        return new LinkedListIterator();
+    }
+
+    private class LinkedListIterator implements java.util.Iterator {
+        private Node current = head;
+
+        @Override
+        public boolean hasNext() {
+            return (current != null);
+        }
+
+        @Override
+        public TheTask next() {
+            TheTask task = current.element;
+            current = current.next;
+            return task;
+        }
+
+        @Override
+        public void remove() {
+            System.out.println("This method is not implemented");
+        }
     }
 
     private static class Node {
