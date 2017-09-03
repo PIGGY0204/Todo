@@ -7,22 +7,49 @@ public class Todo {
     public static void main(String[] args) {
         TodoLinkedList todoList = new TodoLinkedList();
         TodoLinkedList doneList = new TodoLinkedList();
-        File todoFile = new File("data/mainList/todo.dat");
-        File doneFile = new File("data/mainList/done.dat");
+        String todoPathname = "data/main/todo.dat";
+        String donePathname = "data/main/done.dat";
+        File todoFile = new File(todoPathname);
+        File doneFile = new File(donePathname);
         Scanner input = new Scanner(System.in);
+
+        readList(todoFile, todoList);
+        readList(doneFile, doneList);
+        printList(todoList, doneList);
 
         while (true) {
             String command = input.next();
             switch (command) {
-                case "ls":
-                    //list
-                    break; 
+                case "add":
+                    todoList.add(new TheTask(input.nextLine()));
+                    break;
+                case "save":
+                    saveList(todoFile, todoList);
+                    saveList(doneFile, doneList);
+                    break;
+                case "print":
+                    printList(todoList, doneList);
+                    break;
+                case "exit":
+                    System.exit(0);
+                default:
+                    break;
             }   
         }
     }
 
-    public void readList(File file, TodoLinkedList list)
-        throws ClassNotFoundException, IOException {
+    public static void printList(TodoLinkedList todoList, TodoLinkedList doneList) {
+        System.out.println("CHECK" + "\tTASK" + "\tTIME");
+
+        System.out.println("todo:");
+        for (TheTask e: todoList)
+            System.out.println("[ ]\t" + e.getName() + "\t" + e.getDate());
+        System.out.println("done:");
+        for (TheTask e: doneList)
+            System.out.println("[x]\t" + e.getName() + "\t" + e.getDate());
+    }
+
+    public static void readList(File file, TodoLinkedList list) {
         try {
             try (
                 ObjectInputStream input =
@@ -36,19 +63,28 @@ public class Todo {
             }
         } catch (EOFException ex) {
             return;
-        }
+        } catch (ClassNotFoundException ex) {
+            return;
+        } catch (Exception ex) {
+            return;
+        } 
     }
 
-    public void saveList(File file, TodoLinkedList list)
-        throws IOException {
-        try (
-            ObjectOutputStream output =
-                new ObjectOutputStream(new FileOutputStream(file));
-        ) {
-            for (TheTask e: list) {
-                output.writeObject(e.getDate());
-                output.writeUTF(e.getName());
+    public static void saveList(File file, TodoLinkedList list) {
+        try {
+            try (
+                ObjectOutputStream output =
+                    new ObjectOutputStream(new FileOutputStream(file));
+            ) {
+                for (TheTask e: list) {
+                    output.writeObject(e.getDate());
+                    output.writeUTF(e.getName());
+                }
             }
+        } catch (IOException ex) {
+            return;
+        } catch (Exception ex) {
+            return;
         }
     }
 }

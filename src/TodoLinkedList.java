@@ -1,9 +1,8 @@
-public class TodoLinkedList {
+public class TodoLinkedList implements java.lang.Iterable<TheTask> {
     private Node head, tail;
-    private int size;
+    private int size = 0;
 
     public TodoLinkedList() {
-        size = 0;
     }
 
     public void add(TheTask e) {
@@ -111,11 +110,11 @@ public class TodoLinkedList {
         return size;
     }
 
-    public java.util.Iterator iterator() {
+    public java.util.Iterator<TheTask> iterator() {
         return new LinkedListIterator();
     }
 
-    private class LinkedListIterator implements java.util.Iterator {
+    private class LinkedListIterator implements java.util.Iterator<TheTask> {
         private Node current = head;
 
         @Override

@@ -18,7 +18,7 @@ public class TheTask {
         return name;
     }
 
-    public String getDate() {
-        return date.toString();
+    public Date getDate() {
+        return date;
     }
 }
