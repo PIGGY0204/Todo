@@ -17,7 +17,7 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
        }
     }
 
-    public void clear() {
+    public void clean() {
         size = 0;
         head = tail = null;
     }
@@ -28,6 +28,15 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
         else if (index == 0) {
             Node current = head;
             head = head.next;
+            size--;
+            return current.element;
+        } else if (index == size - 1) {
+            Node previous = head;
+            for (int i = 2; i < size; i++)
+                previous = previous.next;
+            Node current = previous.next;
+            previous.next = null;
+            tail = previous;
             size--;
             return current.element;
         }
