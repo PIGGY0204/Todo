@@ -3,15 +3,12 @@ import java.util.Scanner;
 import java.io.*;
 
 public class Todo {
-    private TodoLinkedList unfinishedList = new TodoLinkedList();
-    private TodoLinkedList finishedList = new TodoLinkedList();
-
     //todo
     public static void main(String[] args) {
-        TodoLinkedList unfinishedList = new TodoLinkedList();
-        TodoLinkedList finishedList = new TodoLinkedList();
-        File unfinishedFile = new File("data/mainList/unfinished.dat");
-        File finishedFile = new File("data/mainList/unfinished.dat");
+        TodoLinkedList todoList = new TodoLinkedList();
+        TodoLinkedList doneList = new TodoLinkedList();
+        File todoFile = new File("data/mainList/todo.dat");
+        File doneFile = new File("data/mainList/done.dat");
         Scanner input = new Scanner(System.in);
 
         while (true) {
