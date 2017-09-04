@@ -68,6 +68,9 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
                 sourceCurrent.next = targetCurrent.next;
                 targetCurrent.next = sourceCurrent;
 
+                if (tail.next == null)
+                    tail = sourceCurrent;
+
                 return true;
             } else {
                 Node sourcePrevious = head;
@@ -81,6 +84,9 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
                 sourceCurrent.next = targetCurrent.next;
                 targetCurrent.next = sourceCurrent;
 
+                if (tail.next == null)
+                    tail = sourceCurrent;
+
                 return true;
             }
         } else if (source > target) {
@@ -89,6 +95,9 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
                 for (int i = 1; i < source; i++)
                     sourcePrevious = sourcePrevious.next;
                 sourceCurrent = sourcePrevious.next;
+
+                if (tail == sourceCurrent)
+                    tail = sourcePrevious;
 
                 sourcePrevious.next = sourceCurrent.next;
                 sourceCurrent.next = targetCurrent;
@@ -104,6 +113,9 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
                 for (int i = 1; i < target; i++)
                     targetPrevious = targetPrevious.next;
                 targetCurrent = targetPrevious.next;
+
+                if (tail == sourceCurrent)
+                    tail = sourcePrevious;
 
                 sourcePrevious.next = sourceCurrent.next;
                 targetPrevious.next = sourceCurrent;
