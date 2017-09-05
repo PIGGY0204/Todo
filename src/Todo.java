@@ -3,22 +3,20 @@ import java.util.Scanner;
 import java.io.*;
 
 public class Todo {
+    private static TodoLinkedList todoList = new TodoLinkedList();
+    private static TodoLinkedList doneList = new TodoLinkedList();
+    private static String listName = "main";
+    private static File dataFile = new File("data");
+    private static File listFile = new File(dataFile, listName);
+    private static File todoFile = new File(listFile, "todo.dat");
+    private static File doneFile = new File(listFile, "done.dat");
+
     //todo
     public static void main(String[] args) {
-        TodoLinkedList todoList = new TodoLinkedList();
-        TodoLinkedList doneList = new TodoLinkedList();
-        String listName = "main";
-        String listPathname = "data/" + listName;
-        String todoPathname = listPathname + "/todo.dat";
-        String donePathname = listPathname + "/done.dat";
-        File todoFile = new File(todoPathname);
-        File doneFile = new File(donePathname);
-        File dataFile = new File("data");
         Scanner input = new Scanner(System.in);
 
-        readList(todoFile, todoList);
-        readList(doneFile, doneList);
-        printList(todoList, doneList);
+        initial();
+        printList();
 
         while (true) {
             System.out.print(listName + ":");
@@ -27,23 +25,22 @@ public class Todo {
             switch (command) {
                 case "add":
                     todoList.add(new TheTask(input.nextLine().trim()));
-                    printList(todoList, doneList);
+                    printList();
                     break;
                 case "save":
-                    saveList(todoFile, todoList);
-                    saveList(doneFile, doneList);
+                    save();
                     System.out.println("save success!");
                     break;
                 case "ls":
-                    printList(todoList, doneList);
+                    printList();
                     break;
                 case "mv":
 	            todoList.move(input.nextInt(), input.nextInt());
-                    printList(todoList, doneList);
+                    printList();
                     break;
                 case "clean":
                     doneList.clean();
-                    printList(todoList, doneList);
+                    printList();
                     break;
                 case "rm":
                     n = input.nextInt();
@@ -51,7 +48,7 @@ public class Todo {
                         todoList.remove(n);
                     else
                         doneList.remove(n - todoList.getSize());
-                    printList(todoList, doneList);
+                    printList();
                     break;
                 case "ck":
                     n = input.nextInt();
@@ -62,44 +59,31 @@ public class Todo {
                         TheTask current = doneList.remove(n - todoList.getSize());
                         todoList.add(current);
                     }
-                    printList(todoList, doneList);
+                    printList();
                     break;
                 case "mkls":
-                    listName = input.nextLine().trim();
-                    listPathname = "data/" + listName;
-                    File listFile = new File(listPathname);
-                    listFile.mkdirs();
-                    todoPathname = listPathname + "/todo.dat";
-                    donePathname = listPathname + "/done.dat";
-                    todoFile = new File(todoPathname);
-                    doneFile = new File(donePathname);
-
-                    try {
-                        todoFile.createNewFile();
-                        doneFile.createNewFile();
-                    } catch (IOException ex) {
-                        System.out.println("make new list fail");
-                    }
-
-                    readList(todoFile, todoList);
-                    readList(doneFile, doneList);
-                    printList(todoList, doneList);
+                    save();
+                    makeNewList(input.nextLine().trim());
+                    initial();
+                    printList();
                     break;
                 case "cg":
-                    saveList(todoFile, todoList);
-                    saveList(doneFile, doneList);
-                    listName = input.nextLine().trim();
-                    todoFile = new File("data/" + listName + "/todo.dat");
-                    doneFile = new File("data/" + listName + "/done.dat");
-                    readList(todoFile, todoList);
-                    readList(doneFile, doneList);
-                    printList(todoList, doneList);
+                    save();
+                    String tempListName = input.nextLine().trim();
+                    File tempFile = new File(dataFile, tempListName);
+                    if (!tempFile.exists()) {
+                       System.out.println("list does not exist!");
+                       break;
+                    }
+                    listName = tempListName;
+                    listFile = tempFile;
+                    todoFile = new File(listFile, "todo.dat");
+                    doneFile = new File(listFile, "done.dat");
+                    initial();
+                    printList();
                     break;
                 case "lsls":
-                    String[] allTodoList = dataFile.list();
-                    int i = 0;
-                    for (String s: allTodoList)
-                        System.out.format("%02d %s\n", i++, s);
+                    listList();
                     break;
                 case "rmls":
                     File[] allTodoListFile = dataFile.listFiles();
@@ -108,10 +92,10 @@ public class Todo {
                     (new File(rmls, "done.dat")).delete();
                     if (rmls.delete())
                         System.out.println("success!");
+                    listList();
                     break;
                 case "q":
-                    saveList(todoFile, todoList);
-                    saveList(doneFile, doneList);
+                    save();
                     System.exit(0);
                 default:
                     break;
@@ -119,14 +103,14 @@ public class Todo {
         }
     }
 
-    public static void printList(TodoLinkedList todoList, TodoLinkedList doneList) {
+    private static void printList() {
         int i = 0;
 
         System.out.format("  %s %-40s %s\n", "CHECK", "TASK", "TIME");
         for (TheTask e: todoList)
             System.out.format("%02d [ ]  %-40s %s\n", i++, e.getName(), e.getDate());
 
-        for (int n = 0; n < 76; n++)
+        for (int n = 0; n < 77; n++)
             System.out.print("=");
         System.out.println("");
 
@@ -136,7 +120,12 @@ public class Todo {
         System.out.println("");
     }
 
-    public static void readList(File file, TodoLinkedList list) {
+    private static void initial() {
+        readList(todoFile, todoList);
+        readList(doneFile, doneList);
+    }
+
+    private static void readList(File file, TodoLinkedList list) {
         list.clean();
         try {
             try (
@@ -158,7 +147,12 @@ public class Todo {
         } 
     }
 
-    public static void saveList(File file, TodoLinkedList list) {
+    private static void save() {
+        saveList(todoFile, todoList);
+        saveList(doneFile, doneList);
+    }
+
+    private static void saveList(File file, TodoLinkedList list) {
         try {
             try (
                 ObjectOutputStream output =
@@ -174,5 +168,27 @@ public class Todo {
         } catch (Exception ex) {
             return;
         }
+    }
+
+    private static void makeNewList(String name) {
+        listName = name;
+        listFile = new File(dataFile, listName);
+        listFile.mkdirs();
+        todoFile = new File(listFile, "todo.dat");
+        doneFile = new File(listFile, "done.dat");
+
+        try {
+            todoFile.createNewFile();
+            doneFile.createNewFile();
+        } catch (IOException ex) {
+            System.out.println("make new list fail");
+        }
+    }
+
+    private static void listList() {
+        String[] allTodoList = dataFile.list();
+        int i = 0;
+        for (String s: allTodoList)
+            System.out.format("%02d %s\n", i++, s);
     }
 }
