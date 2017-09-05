@@ -6,9 +6,8 @@ a simple to-do list program.
 to-do list
 ----------
 
-- view task details
-- change task-list
-- delate task-list
+- ~~change task-list~~
+- ~~delate task-list~~
 - ~~view tasks~~
 - ~~change the task status~~
 - ~~clear finished tasks~~
