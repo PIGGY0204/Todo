@@ -7,10 +7,13 @@ public class Todo {
     public static void main(String[] args) {
         TodoLinkedList todoList = new TodoLinkedList();
         TodoLinkedList doneList = new TodoLinkedList();
-        String todoPathname = "data/main/todo.dat";
-        String donePathname = "data/main/done.dat";
+        String listName = "main";
+        String listPathname = "data/" + listName;
+        String todoPathname = listPathname + "/todo.dat";
+        String donePathname = listPathname + "/done.dat";
         File todoFile = new File(todoPathname);
         File doneFile = new File(donePathname);
+        File dataFile = new File("data");
         Scanner input = new Scanner(System.in);
 
         readList(todoFile, todoList);
@@ -18,12 +21,12 @@ public class Todo {
         printList(todoList, doneList);
 
         while (true) {
-            System.out.print("command:");
+            System.out.print(listName + ":");
             String command = input.next();
             int n;
             switch (command) {
                 case "add":
-                    todoList.add(new TheTask(input.nextLine()));
+                    todoList.add(new TheTask(input.nextLine().trim()));
                     printList(todoList, doneList);
                     break;
                 case "save":
@@ -31,10 +34,10 @@ public class Todo {
                     saveList(doneFile, doneList);
                     System.out.println("save success!");
                     break;
-                case "print":
+                case "ls":
                     printList(todoList, doneList);
                     break;
-                case "move":
+                case "mv":
 	            todoList.move(input.nextInt(), input.nextInt());
                     printList(todoList, doneList);
                     break;
@@ -42,7 +45,7 @@ public class Todo {
                     doneList.clean();
                     printList(todoList, doneList);
                     break;
-                case "remove":
+                case "rm":
                     n = input.nextInt();
                     if (n < todoList.getSize())
                         todoList.remove(n);
@@ -50,7 +53,7 @@ public class Todo {
                         doneList.remove(n - todoList.getSize());
                     printList(todoList, doneList);
                     break;
-                case "change":
+                case "ck":
                     n = input.nextInt();
                     if (n < todoList.getSize()) {
                         TheTask current = todoList.remove(n);
@@ -61,7 +64,52 @@ public class Todo {
                     }
                     printList(todoList, doneList);
                     break;
-                case "exit":
+                case "mkls":
+                    listName = input.nextLine().trim();
+                    listPathname = "data/" + listName;
+                    File listFile = new File(listPathname);
+                    listFile.mkdirs();
+                    todoPathname = listPathname + "/todo.dat";
+                    donePathname = listPathname + "/done.dat";
+                    todoFile = new File(todoPathname);
+                    doneFile = new File(donePathname);
+
+                    try {
+                        todoFile.createNewFile();
+                        doneFile.createNewFile();
+                    } catch (IOException ex) {
+                        System.out.println("make new list fail");
+                    }
+
+                    readList(todoFile, todoList);
+                    readList(doneFile, doneList);
+                    printList(todoList, doneList);
+                    break;
+                case "cg":
+                    saveList(todoFile, todoList);
+                    saveList(doneFile, doneList);
+                    listName = input.nextLine().trim();
+                    todoFile = new File("data/" + listName + "/todo.dat");
+                    doneFile = new File("data/" + listName + "/done.dat");
+                    readList(todoFile, todoList);
+                    readList(doneFile, doneList);
+                    printList(todoList, doneList);
+                    break;
+                case "lsls":
+                    String[] allTodoList = dataFile.list();
+                    int i = 0;
+                    for (String s: allTodoList)
+                        System.out.format("%02d %s\n", i++, s);
+                    break;
+                case "rmls":
+                    File[] allTodoListFile = dataFile.listFiles();
+                    File rmls = allTodoListFile[input.nextInt()];
+                    (new File(rmls, "todo.dat")).delete();
+                    (new File(rmls, "done.dat")).delete();
+                    if (rmls.delete())
+                        System.out.println("success!");
+                    break;
+                case "q":
                     saveList(todoFile, todoList);
                     saveList(doneFile, doneList);
                     System.exit(0);
@@ -74,21 +122,22 @@ public class Todo {
     public static void printList(TodoLinkedList todoList, TodoLinkedList doneList) {
         int i = 0;
 
-        System.out.format("  %s %-40s%s\n", "CHECK", "TASK", "TIME");
+        System.out.format("  %s %-40s %s\n", "CHECK", "TASK", "TIME");
         for (TheTask e: todoList)
-            System.out.format("%02d [ ] %-40s %s\n", i++, e.getName(), e.getDate());
+            System.out.format("%02d [ ]  %-40s %s\n", i++, e.getName(), e.getDate());
 
         for (int n = 0; n < 76; n++)
             System.out.print("=");
         System.out.println("");
 
         for (TheTask e: doneList)
-            System.out.format("%02d [x] %-40s %s\n", i++, e.getName(), e.getDate());
+            System.out.format("%02d [x]  %-40s %s\n", i++, e.getName(), e.getDate());
         
         System.out.println("");
     }
 
     public static void readList(File file, TodoLinkedList list) {
+        list.clean();
         try {
             try (
                 ObjectInputStream input =
