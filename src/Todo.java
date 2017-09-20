@@ -22,7 +22,7 @@ public class Todo {
 
     }
 
-    public static void command() {
+    private static void command() {
         Scanner input = new Scanner(System.in);
         String command = input.next();
         int n;
@@ -48,22 +48,11 @@ public class Todo {
                 printList();
                 break;
             case "rm":
-                n = input.nextInt();
-                if (n < todoList.getSize())
-                    todoList.remove(n);
-                else
-                    doneList.remove(n - todoList.getSize());
+                remove(input.nextInt());
                 printList();
                 break;
             case "ck":
-                n = input.nextInt();
-                if (n < todoList.getSize()) {
-                    TheTask current = todoList.remove(n);
-                    doneList.add(current);
-                } else {
-                    TheTask current = doneList.remove(n - todoList.getSize());
-                    todoList.add(current);
-                }
+                check(input.nextInt());
                 printList();
                 break;
             case "mkls":
@@ -74,16 +63,7 @@ public class Todo {
                 break;
             case "cg":
                 save();
-                String tempListName = input.nextLine().trim();
-                File tempFile = new File(dataFile, tempListName);
-                if (!tempFile.exists()) {
-                    System.out.println("list does not exist!");
-                    break;
-                }
-                listName = tempListName;
-                listFile = tempFile;
-                todoFile = new File(listFile, "todo.dat");
-                doneFile = new File(listFile, "done.dat");
+                change(input.nextLine().trim());
                 initial();
                 printList();
                 break;
@@ -91,12 +71,7 @@ public class Todo {
                 listList();
                 break;
             case "rmls":
-                File[] allTodoListFile = dataFile.listFiles();
-                File rmls = allTodoListFile[input.nextInt()];
-                (new File(rmls, "todo.dat")).delete();
-                (new File(rmls, "done.dat")).delete();
-                if (rmls.delete())
-                    System.out.println("success!");
+                removeList(input.nextInt());
                 listList();
                 break;
             case "q":
@@ -194,5 +169,43 @@ public class Todo {
         int i = 0;
         for (String s: allTodoList)
             System.out.format("%02d %s\n", i++, s);
+    }
+
+    private static void remove(int n) {
+        if (n < todoList.getSize())
+            todoList.remove(n);
+        else
+            doneList.remove(n - todoList.getSize());
+    }
+
+    private static void check(int n) {
+        if (n < todoList.getSize()) {
+            TheTask current = todoList.remove(n);
+            doneList.add(current);
+        } else {
+            TheTask current = doneList.remove(n - todoList.getSize());
+            todoList.add(current);
+        }
+    }
+
+    private static void change(String tempListName) {
+        File tempFile = new File(dataFile, tempListName);
+        if (!tempFile.exists()) {
+            System.out.println("list does not exist!");
+            return;
+        }
+        listName = tempListName;
+        listFile = tempFile;
+        todoFile = new File(listFile, "todo.dat");
+        doneFile = new File(listFile, "done.dat");
+    }
+
+    private static void removeList(int n) {
+        File[] allTodoListFile = dataFile.listFiles();
+        File rmls = allTodoListFile[n];
+        (new File(rmls, "todo.dat")).delete();
+        (new File(rmls, "done.dat")).delete();
+        if (rmls.delete())
+            System.out.println("success!");
     }
 }
