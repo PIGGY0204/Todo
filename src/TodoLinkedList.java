@@ -48,6 +48,7 @@ public class TodoLinkedList implements java.lang.Iterable<TheTask> {
 
         Node current = previous.next;
         previous.next = current.next;
+        current.next = null;
         size--;
         return current.element;
     }

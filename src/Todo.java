@@ -16,7 +16,7 @@ public class Todo {
         printList();
 
         while (true) {
-            System.out.print(listName + ":");
+            System.out.print("\n" + listName + ":");
             command();
         }
 
@@ -57,7 +57,16 @@ public class Todo {
                 break;
             case "mkls":
                 save();
-                makeNewList(input.nextLine().trim());
+                String newListName = input.nextLine().trim();
+                if (newListName.equals("")) {
+                    System.out.print("Please enter the new list name(hit enter to cancel): ");
+                    newListName = input.nextLine().trim();
+                }
+                if (newListName.equals("")) {
+                    printList();
+                    break;
+                }
+                makeNewList(newListName);
                 initial();
                 printList();
                 break;
@@ -79,24 +88,29 @@ public class Todo {
                 System.exit(0);
             default:
                 break;
-        }   
+        }
     }
 
     private static void printList() {
         int i = 0;
 
+        System.out.println("");
+
         System.out.format("  %s %-40s %s\n", "CHECK", "TASK", "TIME");
+
+        for (int n = 0; n < 77; n++)
+            System.out.print("-");
+        System.out.println("");
+
         for (TheTask e: todoList)
             System.out.format("%02d [ ]  %-40s %s\n", i++, e.getName(), e.getDate());
 
         for (int n = 0; n < 77; n++)
-            System.out.print("=");
+            System.out.print("-");
         System.out.println("");
 
         for (TheTask e: doneList)
             System.out.format("%02d [x]  %-40s %s\n", i++, e.getName(), e.getDate());
-        
-        System.out.println("");
     }
 
     private static void initial() {
