@@ -8,6 +8,8 @@ TODO
 命令
 -----
 
+**help** 显示命令帮助
+
 **add [taskName]** 添加任务
 
 **save** 保存 to-do list
@@ -24,7 +26,7 @@ TODO
 
 **mkls [newListName]** 创建一个新的 to-do list
 
-**cg [listName]** 切换 to-do list
+**cl [index]** 切换 to-do list 其中的 index 通过 lsls 命令查看
 
 **lsls** 列出所有的 to-do list 名字
 

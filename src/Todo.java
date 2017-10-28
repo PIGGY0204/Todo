@@ -70,9 +70,9 @@ public class Todo {
                 initial();
                 printList();
                 break;
-            case "cg":
+            case "cl":
                 save();
-                change(input.nextLine().trim());
+                changeList(input.nextInt());
                 initial();
                 printList();
                 break;
@@ -86,7 +86,11 @@ public class Todo {
             case "q":
                 save();
                 System.exit(0);
+            case "help":
+                printHelp();
+                break;
             default:
+                System.out.println("Please enter right command!");
                 break;
         }
     }
@@ -181,8 +185,9 @@ public class Todo {
     private static void listList() {
         String[] allTodoList = dataFile.list();
         int i = 0;
+        System.out.println("INDEX " + "LIST_NAME");
         for (String s: allTodoList)
-            System.out.format("%02d %s\n", i++, s);
+            System.out.format("%02d    %s\n", i++, s);
     }
 
     private static void remove(int n) {
@@ -202,7 +207,9 @@ public class Todo {
         }
     }
 
-    private static void change(String tempListName) {
+    private static void changeList(int n) {
+        String[] allTodoList = dataFile.list();
+        String tempListName = allTodoList[n];
         File tempFile = new File(dataFile, tempListName);
         if (!tempFile.exists()) {
             System.out.println("list does not exist!");
@@ -221,5 +228,19 @@ public class Todo {
         (new File(rmls, "done.dat")).delete();
         if (rmls.delete())
             System.out.println("success!");
+    }
+
+    private static void printHelp() {
+        File manualFile = new File("manual");
+        try {
+            try (
+                Scanner manualInput = new Scanner(manualFile);
+            ) {
+            while (manualInput.hasNext())
+                System.out.println(manualInput.nextLine());
+            }
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex);
+        }
     }
 }
